@@ -32,14 +32,15 @@ jobs:
       - name: Verify CHANGELOG
         run: changelog-tool verify
 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
+  ubuntu-24_04:
+    name: Ubuntu 24.04
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4.1.1
+      - name: Checkout source
+        uses: actions/checkout@v4.1.1
       - name: Install npm
-        run: apk add --update --no-cache npm
+        run: sudo apt-get install -y --no-install-recommends npm
       - name: Install vsce
         run: npm install -g @vscode/vsce
-      - name: Test creation of vscode extension
+      - name: Build
         run: make vscode_extension config=debug
