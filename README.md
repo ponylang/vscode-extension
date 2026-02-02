@@ -3,13 +3,18 @@
 ## How to Build
 
 ```sh
-# compile the code
+# install dependencies
 npm install
+
+# compile the code
 npm run compile
+
 # build the package
-vsce package "${VERSION}"
-# uninstall any previously installed packages
-code --uninstall-extension undefined_publisher.pony-lsp
-# install the package
-code --install-extension "pony-lsp-${VERSION}.vsix"
+npm run vsce package
+
+# uninstall any previously installed extensions
+code --uninstall-extension ponylang.pony
+
+# install the newly-built package
+code --install-extension "pony-${VERSION}.vsix"
 ```
