@@ -1,0 +1,14 @@
+dist/
+node_modules/
+out/
+
+.*
+!.vscode/
+!.github
+!.release-notes
+!.gitattributes
+!.gitignore
+!.markdownlintignore
+!.vscodeignore
+!.vscodeignore
+*.vsix
