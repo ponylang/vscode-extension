@@ -1,14 +1,14 @@
 {
-  "name": "pony-lsp",
-  "description": "Ponylang Language Server",
-  "license": "MIT",
-  "version": "0.58.4",
+  "name": "pony-vscode-extension",
+  "description": "Pony language support for Visual Studio Code",
+  "license": "BSD-2-Clause",
+  "version": "0.3.0",
   "categories": [],
-  "repository": "https://github.com/ponylang/pony-language-server",
+  "repository": "github:ponylang/vscode-extension",
   "publisher": "ponylang",
-  "displayName": "Ponylang Language Server",
+  "displayName": "Pony language support",
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.108.1"
   },
   "activationEvents": [
     "onLanguage:pony"
