@@ -35,6 +35,12 @@
           ],
           "default": "off",
           "description": "Traces the communication between VS Code and the Pony language server."
+        },
+        "pony.ponyStdLibPath": {
+          "scope": "window",
+          "type": "string",
+          "default": "",
+          "description": "Path to the Pony standard library packages directory. If not set, pony-lsp will try to auto-detect it."
         }
       }
     },
