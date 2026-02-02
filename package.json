@@ -1,12 +1,18 @@
 {
-  "name": "pony-vscode-extension",
-  "description": "Pony language support for Visual Studio Code",
-  "license": "BSD-2-Clause",
-  "version": "0.3.0",
-  "categories": [],
-  "repository": "github:ponylang/vscode-extension",
+  "name": "pony",
+  "displayName": "Pony",
   "publisher": "ponylang",
-  "displayName": "Pony language support",
+  "description": "Pony language support for Visual Studio Code",
+  "version": "0.3.0",
+  "license": "BSD-2-Clause",
+  "keywords": [
+    "pony"
+  ],
+  "categories": [
+    "Formatters",
+    "Programming Languages"
+  ],
+  "repository": "github:ponylang/vscode-extension",
   "engines": {
     "vscode": "^1.108.1"
   },
