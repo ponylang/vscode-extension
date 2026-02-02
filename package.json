@@ -59,7 +59,8 @@
   "scripts": {
     "vscode:prepublish": "webpack --mode production",
     "compile": "webpack --mode none",
-    "watch": "webpack --mode none --watch"
+    "watch": "webpack --mode none --watch",
+    "vsce": "vsce"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.32",
@@ -67,6 +68,7 @@
     "@types/node": "^16.18.93",
     "@types/vscode": "^1.75.0",
     "@types/which": "^2.0.1",
+    "@vscode/vsce": "^3.7.1",
     "ts-loader": "^9.5.1",
     "typescript": "^4.8.4",
     "webpack": "^5.94.0",

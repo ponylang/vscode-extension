@@ -1,4 +1,4 @@
-PONY_VERSION := 0.58.4
+VERSION := 0.3.0
 
 config ?= release
 ifdef config
@@ -8,29 +8,25 @@ ifdef config
 endif
 
 
-BUILD_DIR := ../build/$(config)
+BUILD_DIR := build/$(config)
 DIST_DIR := dist
 SRC_DIR := src
 EXTENSION_JS := $(DIST_DIR)/extension.js
-EXTENSION := $(BUILD_DIR)/pony-lsp-$(PONY_VERSION).vsix
+EXTENSION := $(BUILD_DIR)/pony-$(VERSION).vsix
 SOURCE_FILES := $(shell find $(SRC_DIR) -name *.ts)
 
 all: $(EXTENSION)
 
-$(EXTENSION): $(SOURCE_FILES) pony-lsp node_modules
-	vsce package -o $(BUILD_DIR) $(PONY_VERSION)
+$(EXTENSION): $(SOURCE_FILES) $(BUILD_DIR) node_modules $(BUILD_DIR)
+	npm run vsce package -- --no-git-tag-version --out="$(BUILD_DIR)/pony-$(VERSION).vsix" "$(VERSION)"
 
 node_modules:
 	npm install
 
-pony-lsp: $(BUILD_DIR)/pony-lsp
-	cp $(BUILD_DIR)/pony-lsp pony-lsp
-
-$(BUILD_DIR)/pony-lsp:
-	$(MAKE) -C ..
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
 clean:
-	rm -rf dist $(BUILD_DIR)
-
+	rm -rf dist build
 
 .PHONY: clean

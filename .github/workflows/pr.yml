@@ -38,9 +38,10 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4.1.1
-      - name: Install npm
-        run: sudo apt-get install -y --no-install-recommends npm
-      - name: Install vsce
-        run: npm install -g @vscode/vsce
+      - name: Install Node.js
+        uses: actions/setup-node@v6.2.0
+        with:
+          node-version: '22.x'
+          cache: 'npm'
       - name: Build
-        run: make vscode_extension config=debug
+        run: make config=debug
