@@ -1,4 +1,10 @@
-.vscode
-node_modules
+.github/
+.release-notes/
+.vscode/
+node_modules/
 src/
+.markdownlintignore
+.gitignore
+Makefile
+VERSION
 tsconfig.json
