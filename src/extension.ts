@@ -12,7 +12,7 @@ import {
   TransportKind,
 } from 'vscode-languageclient/node';
 
-let client: LanguageClient;
+let client: LanguageClient | undefined;
 let outputChannel: OutputChannel;
 
 function checkPonyLspExists(): boolean {
@@ -25,7 +25,7 @@ function checkPonyLspExists(): boolean {
   }
 }
 
-export async function activate(context: ExtensionContext) {
+export async function activate(_context: ExtensionContext) {
   outputChannel = window.createOutputChannel("Pony Language Server");
 
   // Check if pony-lsp is available on PATH
@@ -92,15 +92,12 @@ export async function activate(context: ExtensionContext) {
   return client.start().catch(reason => {
     window.showWarningMessage(`Failed to run Pony Language Server (PLS): ${reason}`);
     showPony(false);
-    client = null;
+    client = undefined;
   });
 }
 
-export function deactivate(): Thenable<void> | undefined {
-  if (!client) {
-    return undefined;
-  }
-  return client.stop();
+export async function deactivate(): Promise<void> {
+  return client?.stop();
 }
 
 export var ponyVerEntry: StatusBarItem;
