@@ -2,18 +2,12 @@
 
 ## Build it
 
+First, ensure you have Node.js and npm installed.
+
 ```sh
-# install dependencies
-npm install
-
-# compile the code
-npm run compile
-
-# build the package
-npm run vsce package
+# build the extension
+make
 ```
-
-Alternatively run `make`!
 
 ## Install it
 
@@ -22,7 +16,7 @@ Alternatively run `make`!
 code --uninstall-extension ponylang.pony
 
 # install the newly-built package
-code --install-extension "pony-${VERSION}.vsix"
+code --install-extension "build/release/pony-${VERSION}.vsix"
 ```
 
 ## Configure the Language Server
