@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
+- Add the Pony icon to the VS Code extension ([PR #5](https://github.com/ponylang/vscode-extension/pull/5))
 - Initial version
 
 ### Changed
