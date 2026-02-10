@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 
+- Ensure only one Pony status bar item is displayed ([PR #6](https://github.com/ponylang/vscode-extension/pull/6))
 
 ### Added
 
