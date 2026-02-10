@@ -1,19 +1,10 @@
-// https://github.com/zigtools/zls-vscode/blob/master/src/extension.ts
-
-// git tags by date
-// git tag --sort=-creatordate
-
+import { execSync } from 'node:child_process';
 import { ExtensionContext, window, StatusBarAlignment, StatusBarItem, workspace, OutputChannel } from 'vscode';
-import { execSync } from 'child_process';
-import {
-  LanguageClient,
-  LanguageClientOptions,
-  ServerOptions,
-  TransportKind,
-} from 'vscode-languageclient/node';
+import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 
 let client: LanguageClient | undefined;
 let outputChannel: OutputChannel;
+let statusBarItem: StatusBarItem | undefined;
 
 function checkPonyLspExists(): boolean {
   try {
@@ -97,14 +88,13 @@ export async function activate(_context: ExtensionContext) {
 }
 
 export async function deactivate(): Promise<void> {
+  statusBarItem?.dispose();
+  statusBarItem = undefined;
   return client?.stop();
 }
 
-export var ponyVerEntry: StatusBarItem;
-
-export function showPony(good: boolean) {
-  ponyVerEntry = window.createStatusBarItem(StatusBarAlignment.Left);
-  if (good) ponyVerEntry.text = `Pony LSP ✓`;
-  else ponyVerEntry.text = `Pony LSP ✗`;
-  ponyVerEntry.show();
+export function showPony(good: boolean): void {
+  statusBarItem ??= window.createStatusBarItem(StatusBarAlignment.Left);
+  statusBarItem.text = good ? `Pony LSP ✓` : `Pony LSP ✗`;
+  statusBarItem.show();
 }
