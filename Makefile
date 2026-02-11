@@ -29,4 +29,8 @@ $(BUILD_DIR):
 clean:
 	rm -rf dist build
 
-.PHONY: clean
+test:
+	npm run compile:tests
+	npm test
+
+.PHONY: clean test

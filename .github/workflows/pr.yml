@@ -48,3 +48,5 @@ jobs:
           cache: 'npm'
       - name: Build
         run: make config=debug
+      - name: Test
+        run: xvfb-run -a make test

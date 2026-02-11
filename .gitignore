@@ -1,7 +1,6 @@
 build/
 dist/
 node_modules/
-out/
 
 .*
 !.vscode/
@@ -10,6 +9,6 @@ out/
 !.gitattributes
 !.gitignore
 !.markdownlintignore
-!.vscodeignore
+!.vscode-test.mjs
 !.vscodeignore
 *.vsix
