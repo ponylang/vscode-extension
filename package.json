@@ -37,6 +37,12 @@
           "default": "off",
           "description": "Traces the communication between VS Code and the Pony language server."
         },
+        "pony.lsp.executable": {
+          "scope": "window",
+          "type": "string",
+          "default": "",
+          "description": "File location of the Pony language server executable. If not set, will search for `pony-lsp` on the PATH."
+        },
         "pony.ponyStdLibPath": {
           "scope": "window",
           "type": "string",

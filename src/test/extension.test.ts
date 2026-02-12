@@ -32,6 +32,10 @@ interface ExtensionModule {
   deactivate(): Promise<void>;
 }
 
+interface MockConfig extends Partial<vscode.WorkspaceConfiguration> {
+  get: sinon.SinonStub<any[], any>;
+}
+
 describe('Extension Test Suite', () => {
   vscode.window.showInformationMessage('Start all tests.');
 
@@ -51,7 +55,7 @@ describe('Extension Test Suite', () => {
     };
     languageClientStub = sandbox.stub().returns(mockLanguageClient);
 
-    // Use proxyquire to stub child_process.execSync and LanguageClient
+    // Default proxyquire setup - can be overridden in specific test contexts
     sut = proxyquire('../extension', {
       'node:child_process': {
         execSync: execSyncStub
@@ -88,6 +92,8 @@ describe('Extension Test Suite', () => {
     let extensionContext: vscode.ExtensionContext;
     let showErrorMessageStub: sinon.SinonStub;
     let showWarningMessageStub: sinon.SinonStub;
+    let getConfigurationStub: sinon.SinonStub;
+    let mockConfig: MockConfig;
     let createOutputChannelStub: sinon.SinonStub<[string, any?], vscode.LogOutputChannel>;
     let createStatusBarItemStub: sinon.SinonStub<[vscode.StatusBarAlignment?, number?], vscode.StatusBarItem>;
     let mockOutputChannel: MockOutputChannel;
@@ -163,6 +169,17 @@ describe('Extension Test Suite', () => {
       showWarningMessageStub = sandbox.stub(vscode.window, 'showWarningMessage');
       createOutputChannelStub = sandbox.stub(vscode.window, 'createOutputChannel').returns(mockOutputChannel as vscode.LogOutputChannel);
       createStatusBarItemStub = sandbox.stub(vscode.window, 'createStatusBarItem').returns(mockStatusBarItem as vscode.StatusBarItem);
+
+      // Default configuration with no custom executable
+      mockConfig = {
+        get: sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
+          if (key === 'lsp.executable') {
+            return '' as T;
+          }
+          return defaultValue as T;
+        })
+      };
+      getConfigurationStub = sandbox.stub(vscode.workspace, 'getConfiguration').returns(mockConfig as vscode.WorkspaceConfiguration);
     });
 
     context('given pony-lsp exists', () => {
@@ -216,6 +233,139 @@ describe('Extension Test Suite', () => {
           call.args[0] && call.args[0].includes('PonyLSP client ready')
         );
         assert.strictEqual(clientReadyMessage, undefined, 'should not log "PonyLSP client ready" when returning early');
+      });
+    });
+
+    context('given custom LSP executable is configured', () => {
+      context('and the executable file is valid', () => {
+        let accessStub: sinon.SinonStub;
+
+        beforeEach(() => {
+          // Configure a custom executable path
+          mockConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
+            if (key === 'lsp.executable') {
+              return '/custom/path/to/pony-lsp' as T;
+            }
+            return defaultValue as T;
+          });
+
+          // Stub fs.access to succeed (file exists and is executable)
+          accessStub = sandbox.stub().yields(null);
+
+          languageClientStub = sandbox.stub().returns(mockLanguageClient);
+
+          sut = proxyquire('../extension', {
+            'node:child_process': {
+              execSync: execSyncStub
+            },
+            'node:fs': {
+              access: accessStub,
+              constants: { F_OK: 0, X_OK: 1 }
+            },
+            'node:util': {
+              promisify: <T extends (...args: unknown[]) => void>(fn: T) => {
+                return (...args: unknown[]) => new Promise((resolve, reject) => {
+                  fn(...args, (err: Error | null, result?: unknown) => {
+                    if (err) reject(err);
+                    else resolve(result);
+                  });
+                });
+              }
+            },
+            'vscode-languageclient/node': {
+              LanguageClient: languageClientStub,
+              TransportKind: { stdio: 0 }
+            }
+          });
+        });
+
+        it('does not check PATH for pony-lsp', async () => {
+          await sut.activate(extensionContext);
+
+          assert.ok(execSyncStub.notCalled, 'should not call execSync to check PATH when custom executable is provided');
+        });
+
+        it('uses the configured executable file', async () => {
+          await sut.activate(extensionContext);
+
+          const customExecLog = mockOutputChannel.appendLine.getCalls().find((call: sinon.SinonSpyCall<[string], void>) =>
+            call.args[0] && call.args[0].includes('Using custom pony-lsp executable')
+          );
+          assert.ok(customExecLog, 'should log that custom executable is being used');
+        });
+
+        it('does not show error message', async () => {
+          await sut.activate(extensionContext);
+
+          assert.ok(showErrorMessageStub.notCalled, 'should not show error message when custom executable is valid');
+        });
+      });
+
+      context('and the executable file is not valid', () => {
+        let accessStub: sinon.SinonStub;
+
+        beforeEach(() => {
+          // Configure a custom executable path
+          mockConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
+            if (key === 'lsp.executable') {
+              return '/invalid/path/to/pony-lsp' as T;
+            }
+            return defaultValue as T;
+          });
+
+          // Stub fs.access to fail (file doesn't exist or not executable)
+          accessStub = sandbox.stub().yields(new Error('ENOENT'));
+
+          languageClientStub = sandbox.stub().returns(mockLanguageClient);
+
+          sut = proxyquire('../extension', {
+            'node:child_process': {
+              execSync: execSyncStub
+            },
+            'node:fs': {
+              access: accessStub,
+              constants: { F_OK: 0, X_OK: 1 }
+            },
+            'node:util': {
+              promisify: <T extends (...args: unknown[]) => void>(fn: T) => {
+                return (...args: unknown[]) => new Promise((resolve, reject) => {
+                  fn(...args, (err: Error | null, result?: unknown) => {
+                    if (err) reject(err);
+                    else resolve(result);
+                  });
+                });
+              }
+            },
+            'vscode-languageclient/node': {
+              LanguageClient: languageClientStub,
+              TransportKind: { stdio: 0 }
+            }
+          });
+        });
+
+        it('shows an error message', async () => {
+          await sut.activate(extensionContext);
+
+          assert.ok(showErrorMessageStub.calledOnce, 'should show error message');
+          assert.ok(showErrorMessageStub.firstCall.args[0].includes('not found or not executable'),
+            'error message should mention executable is not found or not executable');
+          assert.ok(showErrorMessageStub.firstCall.args[0].includes('/invalid/path/to/pony-lsp'),
+            'error message should include the configured path');
+        });
+
+        it('does not check PATH for pony-lsp', async () => {
+          await sut.activate(extensionContext);
+
+          assert.ok(execSyncStub.notCalled,
+            'should not check PATH when custom executable is configured (even if invalid)');
+        });
+
+        it('returns early without starting language client', async () => {
+          await sut.activate(extensionContext);
+
+          assert.ok(languageClientStub.notCalled,
+            'should not create language client when executable validation fails');
+        });
       });
     });
   });
