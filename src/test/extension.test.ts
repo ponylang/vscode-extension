@@ -213,9 +213,9 @@ describe('Extension Test Suite', () => {
 
         // Verify it did not create the language client
         const clientReadyMessage = mockOutputChannel.appendLine.getCalls().find((call: sinon.SinonSpyCall<[string], void>) =>
-          call.args[0] && call.args[0].includes('PonyLSP client ready')
+          call.args[0] && call.args[0].includes('Pony language server client starting')
         );
-        assert.strictEqual(clientReadyMessage, undefined, 'should not log "PonyLSP client ready" when returning early');
+        assert.strictEqual(clientReadyMessage, undefined, 'should not log "Pony language server client starting" when returning early');
       });
     });
   });
