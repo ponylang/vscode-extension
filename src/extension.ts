@@ -1,6 +1,10 @@
 import { execSync } from 'node:child_process';
+import { access, constants } from 'node:fs';
+import { promisify } from 'node:util';
 import { ExtensionContext, window, StatusBarAlignment, StatusBarItem, workspace, OutputChannel } from 'vscode';
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
+
+const accessAsync = promisify(access);
 
 let client: LanguageClient | undefined;
 let outputChannel: OutputChannel;
@@ -16,28 +20,49 @@ function checkPonyLspExists(): boolean {
   }
 }
 
+async function checkExecutableFile(filePath: string): Promise<boolean> {
+  try {
+    await accessAsync(filePath, constants.F_OK | constants.X_OK);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 export async function activate(_context: ExtensionContext) {
   outputChannel = window.createOutputChannel("Pony Language Server");
+  const config = workspace.getConfiguration('pony');
 
-  // Check if pony-lsp is available on PATH
-  if (!checkPonyLspExists()) {
-    const errorMessage = 'pony-lsp not found on PATH. Please install pony-lsp and ensure it is available in your system PATH.';
-    window.showErrorMessage(errorMessage);
-    outputChannel.appendLine(`ERROR: ${errorMessage}`);
-    showPony(false);
-    return;
+  // Check if custom LSP executable is provided or use pony-lsp from PATH
+  let lspExecutable = config.get<string>('lsp.executable', '');
+  if (lspExecutable) {
+    // If custom executable is provided, validate it's an executable file
+    const isValidExecutable = await checkExecutableFile(lspExecutable);
+    if (!isValidExecutable) {
+      const errorMessage = `Configured pony-lsp executable not found or not executable: ${lspExecutable}`;
+      window.showErrorMessage(errorMessage);
+      outputChannel.appendLine(`ERROR: ${errorMessage}`);
+      showPony(false);
+      return;
+    }
+    outputChannel.appendLine(`Using custom pony-lsp executable: ${lspExecutable}`);
+  } else {
+    // If no configured executable, check if pony-lsp is available on PATH
+    lspExecutable = 'pony-lsp';
+    if (!checkPonyLspExists()) {
+      const errorMessage = `${lspExecutable} not found on PATH. Please install ${lspExecutable} and ensure it is available in your system PATH.`;
+      window.showErrorMessage(errorMessage);
+      outputChannel.appendLine(`ERROR: ${errorMessage}`);
+      showPony(false);
+      return;
+    }
+    outputChannel.appendLine(`Using ${lspExecutable} from PATH`);
   }
-
   showPony(true);
 
-  // Get configuration
-  const config = workspace.getConfiguration('pony');
+  // Set or append to PONYPATH environment variable
   const ponyStdLibPath = config.get<string>('ponyStdLibPath', '');
-
-  // Prepare environment variables
   const env = { ...process.env };
-
-  // Set or append to PONYPATH
   if (ponyStdLibPath) {
     if (env.PONYPATH) {
       const pathSeparator = process.platform === 'win32' ? ';' : ':';
@@ -55,7 +80,7 @@ export async function activate(_context: ExtensionContext) {
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the run options are used
   let serverOptions: ServerOptions = {
-    command: "pony-lsp",
+    command: lspExecutable,
     args: ["stdio"],
     transport: TransportKind.stdio,
     options: { env }
