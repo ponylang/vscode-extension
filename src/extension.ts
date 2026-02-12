@@ -103,13 +103,18 @@ export async function activate(_context: ExtensionContext) {
     clientOptions
   );
 
-  outputChannel.appendLine("PonyLSP client ready");
+  outputChannel.appendLine("Pony language server client starting…");
   // Start the client. This will also launch the server
-  return client.start().catch(reason => {
-    window.showWarningMessage(`Failed to run Pony Language Server (PLS): ${reason}`);
-    showPony(false);
-    client = undefined;
-  });
+  return client
+    .start()
+    .then(() => {
+      outputChannel.appendLine("Pony language server client ready");
+    })
+    .catch((reason) => {
+      window.showWarningMessage(`Pony language server client failed: ${reason}`);
+      showPony(false);
+      client = undefined;
+    });
 }
 
 export async function deactivate(): Promise<void> {
