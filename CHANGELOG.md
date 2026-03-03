@@ -16,4 +16,5 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changed
 
+- Require pony-lsp 0.61.0+ ([PR #15](https://github.com/ponylang/vscode-extension/pull/15))
 
