@@ -29,6 +29,14 @@ async function checkExecutableFile(filePath: string): Promise<boolean> {
   }
 }
 
+function getLspInitializationOptions(): { defines: string[]; ponypath: string[] } {
+  const config = workspace.getConfiguration('pony');
+  return {
+    defines: config.get<string[]>('lsp.defines', []),
+    ponypath: config.get<string[]>('lsp.ponypath', []),
+  };
+}
+
 export async function activate(_context: ExtensionContext) {
   outputChannel = window.createOutputChannel("Pony Language Server");
   const config = workspace.getConfiguration('pony');
@@ -58,6 +66,7 @@ export async function activate(_context: ExtensionContext) {
     }
     outputChannel.appendLine(`Using ${lspExecutable} from PATH`);
   }
+
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the run options are used
   let serverOptions: ServerOptions = {
@@ -74,6 +83,7 @@ export async function activate(_context: ExtensionContext) {
     stdioEncoding: "utf-8",
     traceOutputChannel: outputChannel,
     outputChannel: outputChannel,
+    initializationOptions: getLspInitializationOptions(),
   };
 
   // Create the language client and start the client.

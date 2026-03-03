@@ -38,11 +38,17 @@ The extension will show an error if `pony-lsp` is not found.
 
 **`pony.lsp.executable`**: The file path to the `pony-lsp` executable. If not set, the extension will search for `pony-lsp` on your `PATH`.
 
+**`pony.lsp.defines`**: An array of compilation defines passed to `pony-lsp`, equivalent to the `-D` flag of `ponyc`.
+
+**`pony.lsp.ponypath`**: An array of paths added to the package search paths of `pony-lsp`, equivalent to the `PONYPATH` environment variable.
+
 **`pony.trace.server`**: Traces the communication between VS Code and the Pony language server. Accepted values are `"off"` (default), `"messages"`, and `"verbose"`.
 
 ```json
 {
   "pony.lsp.executable": "/usr/local/bin/pony-lsp",
+  "pony.lsp.defines": ["FOO", "BAR"],
+  "pony.lsp.ponypath": ["/path/to/pony/package1", "/path/to/pony/package2"],
   "pony.trace.server": "off"
 }
 ```

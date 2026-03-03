@@ -168,7 +168,7 @@ describe('Extension Test Suite', () => {
       createOutputChannelStub = sandbox.stub(vscode.window, 'createOutputChannel').returns(mockOutputChannel as vscode.LogOutputChannel);
       sandbox.stub(vscode.window, 'createStatusBarItem').returns(mockStatusBarItem as vscode.StatusBarItem);
 
-      // Default configuration with no custom executable
+      // Default configuration with no custom executable and no LSP settings
       mockConfig = {
         get: sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
           if (key === 'lsp.executable') {
@@ -207,6 +207,69 @@ describe('Extension Test Suite', () => {
         const result = sut.activate(extensionContext);
         assert.ok(result instanceof Promise, 'activate should always return a Promise');
         await result;
+      });
+
+      it('passes empty defines and ponypath as initializationOptions by default', async () => {
+        await sut.activate(extensionContext);
+
+        const [,, , clientOptions] = languageClientStub.firstCall.args;
+        assert.deepStrictEqual(
+          clientOptions.initializationOptions,
+          { defines: [], ponypath: [] },
+          'initializationOptions should default to empty arrays'
+        );
+      });
+
+      it('passes configured defines as initializationOptions', async () => {
+        mockConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
+          if (key === 'lsp.executable') { return '' as T; }
+          if (key === 'lsp.defines') { return ['FOO', 'BAR'] as T; }
+          return defaultValue as T;
+        });
+
+        await sut.activate(extensionContext);
+
+        const [,, , clientOptions] = languageClientStub.firstCall.args;
+        assert.deepStrictEqual(
+          clientOptions.initializationOptions.defines,
+          ['FOO', 'BAR'],
+          'initializationOptions.defines should reflect configured values'
+        );
+      });
+
+      it('passes configured ponypath as initializationOptions', async () => {
+        mockConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
+          if (key === 'lsp.executable') { return '' as T; }
+          if (key === 'lsp.ponypath') { return ['/path/to/pkg', '/another/path'] as T; }
+          return defaultValue as T;
+        });
+
+        await sut.activate(extensionContext);
+
+        const [,, , clientOptions] = languageClientStub.firstCall.args;
+        assert.deepStrictEqual(
+          clientOptions.initializationOptions.ponypath,
+          ['/path/to/pkg', '/another/path'],
+          'initializationOptions.ponypath should reflect configured values'
+        );
+      });
+
+      it('passes both defines and ponypath together as initializationOptions', async () => {
+        mockConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
+          if (key === 'lsp.executable') { return '' as T; }
+          if (key === 'lsp.defines') { return ['DEBUG'] as T; }
+          if (key === 'lsp.ponypath') { return ['/libs'] as T; }
+          return defaultValue as T;
+        });
+
+        await sut.activate(extensionContext);
+
+        const [,, , clientOptions] = languageClientStub.firstCall.args;
+        assert.deepStrictEqual(
+          clientOptions.initializationOptions,
+          { defines: ['DEBUG'], ponypath: ['/libs'] },
+          'initializationOptions should contain both defines and ponypath'
+        );
       });
     });
 
