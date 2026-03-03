@@ -29,14 +29,20 @@ Install `pony-lsp` and [`ponyc`](https://github.com/ponylang/ponyc) and ensure t
 brew install ponyc
 ```
 
+> [!IMPORTANT]
+> `pony-lsp` 0.61.0 or above is required, to ensure it correctly locates the Pony standard library and accepts the needed configuration options.
+
 The extension will show an error if `pony-lsp` is not found.
 
 ### Configuration
 
-**`pony.ponyStdLibPath`**: The file path to the Pony standard library. If set, prepended to `PONYPATH`.
+**`pony.lsp.executable`**: The file path to the `pony-lsp` executable. If not set, the extension will search for `pony-lsp` on your `PATH`.
+
+**`pony.trace.server`**: Traces the communication between VS Code and the Pony language server. Accepted values are `"off"` (default), `"messages"`, and `"verbose"`.
 
 ```json
 {
-  "pony.ponyStdLibPath": "/usr/local/lib/ponyc/0.60.5/packages"
+  "pony.lsp.executable": "/usr/local/bin/pony-lsp",
+  "pony.trace.server": "off"
 }
 ```
