@@ -13,3 +13,10 @@ Added a new configuration option `pony.lsp.executable` to specify a custom path 
 
 `pony-lsp` 0.61.0 or above is now required. This version automatically locates the Pony standard library, so the `pony.ponyStdLibPath` setting has been removed. If you have this set in your `settings.json`, you can safely remove it.
 
+## Add `pony-lsp.defines` and `pony-lsp.ponypath` configuration options
+
+Two new configuration options are available for the Pony language server:
+
+- `pony-lsp.defines`: an array of compilation defines passed to `pony-lsp`, equivalent to the `-D` flag of `ponyc`.
+- `pony-lsp.ponypath`: an array of paths added to the package search paths of `pony-lsp`, equivalent to the `PONYPATH` environment variable.
+
