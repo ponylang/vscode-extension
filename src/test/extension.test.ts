@@ -92,10 +92,8 @@ describe('Extension Test Suite', () => {
     let extensionContext: vscode.ExtensionContext;
     let showErrorMessageStub: sinon.SinonStub;
     let showWarningMessageStub: sinon.SinonStub;
-    let getConfigurationStub: sinon.SinonStub;
     let mockConfig: MockConfig;
     let createOutputChannelStub: sinon.SinonStub<[string, any?], vscode.LogOutputChannel>;
-    let createStatusBarItemStub: sinon.SinonStub<[vscode.StatusBarAlignment?, number?], vscode.StatusBarItem>;
     let mockOutputChannel: MockOutputChannel;
     let mockStatusBarItem: MockStatusBarItem;
 
@@ -168,7 +166,7 @@ describe('Extension Test Suite', () => {
       showErrorMessageStub = sandbox.stub(vscode.window, 'showErrorMessage');
       showWarningMessageStub = sandbox.stub(vscode.window, 'showWarningMessage');
       createOutputChannelStub = sandbox.stub(vscode.window, 'createOutputChannel').returns(mockOutputChannel as vscode.LogOutputChannel);
-      createStatusBarItemStub = sandbox.stub(vscode.window, 'createStatusBarItem').returns(mockStatusBarItem as vscode.StatusBarItem);
+      sandbox.stub(vscode.window, 'createStatusBarItem').returns(mockStatusBarItem as vscode.StatusBarItem);
 
       // Default configuration with no custom executable
       mockConfig = {
@@ -179,7 +177,7 @@ describe('Extension Test Suite', () => {
           return defaultValue as T;
         })
       };
-      getConfigurationStub = sandbox.stub(vscode.workspace, 'getConfiguration').returns(mockConfig as vscode.WorkspaceConfiguration);
+      sandbox.stub(vscode.workspace, 'getConfiguration').returns(mockConfig as vscode.WorkspaceConfiguration);
     });
 
     context('given pony-lsp exists', () => {
@@ -226,7 +224,7 @@ describe('Extension Test Suite', () => {
       });
 
       it('returns early without starting language client', async () => {
-        const result = await sut.activate(extensionContext);
+        await sut.activate(extensionContext);
 
         // Verify it did not create the language client
         const clientReadyMessage = mockOutputChannel.appendLine.getCalls().find((call: sinon.SinonSpyCall<[string], void>) =>
