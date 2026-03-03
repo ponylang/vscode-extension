@@ -93,6 +93,7 @@ describe('Extension Test Suite', () => {
     let showErrorMessageStub: sinon.SinonStub;
     let showWarningMessageStub: sinon.SinonStub;
     let mockConfig: MockConfig;
+    let mockPonyConfig: MockConfig;
     let createOutputChannelStub: sinon.SinonStub<[string, any?], vscode.LogOutputChannel>;
     let mockOutputChannel: MockOutputChannel;
     let mockStatusBarItem: MockStatusBarItem;
@@ -169,7 +170,7 @@ describe('Extension Test Suite', () => {
       sandbox.stub(vscode.window, 'createStatusBarItem').returns(mockStatusBarItem as vscode.StatusBarItem);
 
       // Default configuration with no custom executable and no LSP settings
-      mockConfig = {
+      mockPonyConfig = {
         get: sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
           if (key === 'lsp.executable') {
             return '' as T;
@@ -177,7 +178,13 @@ describe('Extension Test Suite', () => {
           return defaultValue as T;
         })
       };
-      sandbox.stub(vscode.workspace, 'getConfiguration').returns(mockConfig as vscode.WorkspaceConfiguration);
+      mockConfig = {
+        get: sandbox.stub().callsFake(<T>(_key: string, defaultValue?: T): T => defaultValue as T)
+      };
+      sandbox.stub(vscode.workspace, 'getConfiguration').callsFake((section?: string) => {
+        if (section === 'pony') { return mockPonyConfig as vscode.WorkspaceConfiguration; }
+        return mockConfig as vscode.WorkspaceConfiguration;
+      });
     });
 
     context('given pony-lsp exists', () => {
@@ -222,8 +229,7 @@ describe('Extension Test Suite', () => {
 
       it('passes configured defines as initializationOptions', async () => {
         mockConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
-          if (key === 'lsp.executable') { return '' as T; }
-          if (key === 'lsp.defines') { return ['FOO', 'BAR'] as T; }
+          if (key === 'defines') { return ['FOO', 'BAR'] as T; }
           return defaultValue as T;
         });
 
@@ -239,8 +245,7 @@ describe('Extension Test Suite', () => {
 
       it('passes configured ponypath as initializationOptions', async () => {
         mockConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
-          if (key === 'lsp.executable') { return '' as T; }
-          if (key === 'lsp.ponypath') { return ['/path/to/pkg', '/another/path'] as T; }
+          if (key === 'ponypath') { return ['/path/to/pkg', '/another/path'] as T; }
           return defaultValue as T;
         });
 
@@ -256,9 +261,8 @@ describe('Extension Test Suite', () => {
 
       it('passes both defines and ponypath together as initializationOptions', async () => {
         mockConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
-          if (key === 'lsp.executable') { return '' as T; }
-          if (key === 'lsp.defines') { return ['DEBUG'] as T; }
-          if (key === 'lsp.ponypath') { return ['/libs'] as T; }
+          if (key === 'defines') { return ['DEBUG'] as T; }
+          if (key === 'ponypath') { return ['/libs'] as T; }
           return defaultValue as T;
         });
 
@@ -303,7 +307,7 @@ describe('Extension Test Suite', () => {
 
         beforeEach(() => {
           // Configure a custom executable path
-          mockConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
+          mockPonyConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
             if (key === 'lsp.executable') {
               return '/custom/path/to/pony-lsp' as T;
             }
@@ -367,7 +371,7 @@ describe('Extension Test Suite', () => {
 
         beforeEach(() => {
           // Configure a custom executable path
-          mockConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
+          mockPonyConfig.get = sandbox.stub().callsFake(<T>(key: string, defaultValue?: T): T => {
             if (key === 'lsp.executable') {
               return '/invalid/path/to/pony-lsp' as T;
             }

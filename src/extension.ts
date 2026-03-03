@@ -30,10 +30,10 @@ async function checkExecutableFile(filePath: string): Promise<boolean> {
 }
 
 function getLspInitializationOptions(): { defines: string[]; ponypath: string[] } {
-  const config = workspace.getConfiguration('pony');
+  const config = workspace.getConfiguration('pony-lsp');
   return {
-    defines: config.get<string[]>('lsp.defines', []),
-    ponypath: config.get<string[]>('lsp.ponypath', []),
+    defines: config.get<string[]>('defines', []),
+    ponypath: config.get<string[]>('ponypath', []),
   };
 }
 

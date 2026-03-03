@@ -43,7 +43,7 @@
           "default": "",
           "description": "File location of the Pony language server executable. If not set, will search for `pony-lsp` on the PATH."
         },
-        "pony.lsp.defines": {
+        "pony-lsp.defines": {
           "scope": "resource",
           "type": "array",
           "items": {
@@ -52,7 +52,7 @@
           "default": [],
           "description": "Defines active during compilation. These are passed to `pony-lsp` and correspond to the `-D` flag of `ponyc`."
         },
-        "pony.lsp.ponypath": {
+        "pony-lsp.ponypath": {
           "scope": "resource",
           "type": "array",
           "items": {
