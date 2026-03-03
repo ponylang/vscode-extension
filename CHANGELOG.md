@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file. This projec
 - Add the Pony icon to the VS Code extension ([PR #5](https://github.com/ponylang/vscode-extension/pull/5))
 - Initial version
 - Add configurable LSP executable path ([PR #10](https://github.com/ponylang/vscode-extension/pull/10))
+- Add `pony-lsp.defines` and `pony-lsp.ponypath` configuration options ([PR #18](https://github.com/ponylang/vscode-extension/pull/18))
 
 ### Changed
 
