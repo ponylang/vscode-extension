@@ -58,8 +58,6 @@ export async function activate(_context: ExtensionContext) {
     }
     outputChannel.appendLine(`Using ${lspExecutable} from PATH`);
   }
-  showPony(true);
-
   // Set or append to PONYPATH environment variable
   const ponyStdLibPath = config.get<string>('ponyStdLibPath', '');
   const env = { ...process.env };
@@ -108,6 +106,7 @@ export async function activate(_context: ExtensionContext) {
   try {
     await client.start();
     outputChannel.appendLine("Pony language server client ready");
+    showPony(true);
   } catch (reason) {
     window.showWarningMessage(`Pony language server client failed: ${reason}`);
     showPony(false);
