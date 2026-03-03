@@ -58,30 +58,13 @@ export async function activate(_context: ExtensionContext) {
     }
     outputChannel.appendLine(`Using ${lspExecutable} from PATH`);
   }
-  // Set or append to PONYPATH environment variable
-  const ponyStdLibPath = config.get<string>('ponyStdLibPath', '');
-  const env = { ...process.env };
-  if (ponyStdLibPath) {
-    if (env.PONYPATH) {
-      const pathSeparator = process.platform === 'win32' ? ';' : ':';
-      env.PONYPATH = `${ponyStdLibPath}${pathSeparator}${env.PONYPATH}`;
-      outputChannel.appendLine(`Prepending to PONYPATH: ${ponyStdLibPath}`);
-      outputChannel.appendLine(`Full PONYPATH: ${env.PONYPATH}`);
-    } else {
-      env.PONYPATH = ponyStdLibPath;
-      outputChannel.appendLine(`Setting PONYPATH: ${ponyStdLibPath}`);
-    }
-  } else if (env.PONYPATH) {
-    outputChannel.appendLine(`Using existing PONYPATH: ${env.PONYPATH}`);
-  }
-
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the run options are used
   let serverOptions: ServerOptions = {
     command: lspExecutable,
     args: ["stdio"],
     transport: TransportKind.stdio,
-    options: { env }
+    options: { env: process.env }
   };
 
   // Options to control the language client

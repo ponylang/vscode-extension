@@ -24,7 +24,7 @@
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "Pony configuration",
+      "title": "Pony",
       "properties": {
         "pony.trace.server": {
           "scope": "window",
@@ -42,12 +42,6 @@
           "type": "string",
           "default": "",
           "description": "File location of the Pony language server executable. If not set, will search for `pony-lsp` on the PATH."
-        },
-        "pony.ponyStdLibPath": {
-          "scope": "window",
-          "type": "string",
-          "default": "",
-          "description": "Path to the Pony standard library packages directory. If not set, pony-lsp will try to auto-detect it."
         }
       }
     },
