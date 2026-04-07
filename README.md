@@ -13,10 +13,10 @@ make
 
 ```sh
 # uninstall any previously installed extensions
-code --uninstall-extension ponylang.pony
+code --uninstall-extension ponylang.ponylang-vscode-extension
 
 # install the newly-built package
-code --install-extension "build/release/pony-${VERSION}.vsix"
+code --install-extension "build/release/ponylang-vscode-extension-${VERSION}.vsix"
 ```
 
 ## Configure the Language Server
