@@ -61,8 +61,7 @@ describe('Extension Test Suite', () => {
         execSync: execSyncStub
       },
       'vscode-languageclient/node': {
-        LanguageClient: languageClientStub,
-        TransportKind: { stdio: 0 }
+        LanguageClient: languageClientStub
       }
     });
   });
@@ -208,6 +207,16 @@ describe('Extension Test Suite', () => {
         assert.ok(result instanceof Promise, 'activate should always return a Promise');
         await result;
       });
+
+      it('builds server options that add no pony-lsp arguments', async () => {
+        await sut.activate(extensionContext);
+
+        assert.ok(languageClientStub.calledOnce, 'language client should be constructed once');
+        const serverOptions = languageClientStub.firstCall.args[2];
+        assert.deepStrictEqual(Object.keys(serverOptions).sort(), ['command', 'options'],
+          'server options should carry command and options and nothing else');
+        assert.strictEqual(serverOptions.command, 'pony-lsp', 'server options should run pony-lsp');
+      });
     });
 
     context('given pony-lsp does not exist', () => {
@@ -271,8 +280,7 @@ describe('Extension Test Suite', () => {
               }
             },
             'vscode-languageclient/node': {
-              LanguageClient: languageClientStub,
-              TransportKind: { stdio: 0 }
+              LanguageClient: languageClientStub
             }
           });
         });
@@ -335,8 +343,7 @@ describe('Extension Test Suite', () => {
               }
             },
             'vscode-languageclient/node': {
-              LanguageClient: languageClientStub,
-              TransportKind: { stdio: 0 }
+              LanguageClient: languageClientStub
             }
           });
         });
