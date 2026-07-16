@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process';
 import { access, constants } from 'node:fs';
 import { promisify } from 'node:util';
 import { ExtensionContext, window, StatusBarAlignment, StatusBarItem, workspace, OutputChannel } from 'vscode';
-import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
+import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 
 const accessAsync = promisify(access);
 
@@ -58,12 +58,13 @@ export async function activate(_context: ExtensionContext) {
     }
     outputChannel.appendLine(`Using ${lspExecutable} from PATH`);
   }
-  // If the extension is launched in debug mode then the debug server options are used
-  // Otherwise the run options are used
+
+  // Nothing here may become a pony-lsp argument. As of ponyc 0.67.0, pony-lsp
+  // declares no positional arguments and no option beyond --version and --help
+  // (see ponyc's tools/pony-lsp), and exits 1 on anything else before it
+  // speaks LSP. `args` is passed through as-is; `transport` appends --stdio.
   let serverOptions: ServerOptions = {
     command: lspExecutable,
-    args: ["stdio"],
-    transport: TransportKind.stdio,
     options: { env: process.env }
   };
 
