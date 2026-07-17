@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Fixed
 
 - Stop passing arguments to pony-lsp ([PR #32](https://github.com/ponylang/vscode-extension/pull/32))
+- Launch pony-lsp installed by ponyup on Windows ([PR #33](https://github.com/ponylang/vscode-extension/pull/33))
 
 ### Added
 
