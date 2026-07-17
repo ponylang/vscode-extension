@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
+- Find a newly installed pony-lsp without restarting VS Code ([PR #36](https://github.com/ponylang/vscode-extension/pull/36))
 
 ### Changed
 
