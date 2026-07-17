@@ -32,7 +32,7 @@ brew install ponyc
 > [!IMPORTANT]
 > `pony-lsp` 0.61.0 or above is required, to ensure it correctly locates the Pony standard library and accepts the needed configuration options.
 
-The extension will show an error if `pony-lsp` is not found.
+If `pony-lsp` is not found, the extension shows an error. Once you install it, or set `pony.lsp.executable`, you can start the language server without restarting VS Code: run the **Pony: Restart Language Server** command, or click **Retry** on the error. The extension searches your `PATH` and ponyup's install directory, so a toolchain installed with ponyup is found without a restart.
 
 ### Configuration
 
@@ -40,7 +40,7 @@ The extension will show an error if `pony-lsp` is not found.
 
 These settings control how the Pony VS Code extension operates.
 
-**`pony.lsp.executable`**: The file path to the `pony-lsp` executable. If not set, the extension will search for `pony-lsp` on your `PATH`.
+**`pony.lsp.executable`**: The file path to the `pony-lsp` executable. If not set, the extension searches for `pony-lsp` on your `PATH` and then in ponyup's install directory.
 
 **`pony.trace.server`**: Traces the communication between VS Code and the Pony language server. Accepted values are `"off"` (default), `"messages"`, and `"verbose"`.
 

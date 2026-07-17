@@ -41,7 +41,7 @@
           "scope": "window",
           "type": "string",
           "default": "",
-          "description": "File location of the Pony language server executable. If not set, will search for `pony-lsp` on the PATH."
+          "description": "File location of the Pony language server executable. If not set, searches for `pony-lsp` on the PATH and then in ponyup's install directory."
         },
         "pony-lsp.defines": {
           "scope": "resource",
@@ -85,7 +85,22 @@
         "scopeName": "source.pony",
         "path": "./pony.tmLanguage"
       }
-    ]
+    ],
+    "commands": [
+      {
+        "command": "pony.restartLanguageServer",
+        "title": "Restart Language Server",
+        "category": "Pony"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "pony.restartLanguageServer",
+          "when": "pony.activated"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
