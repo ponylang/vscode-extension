@@ -1,7 +1,7 @@
 import { access, constants } from 'node:fs';
 import { PlatformPath, posix, win32 } from 'node:path';
 import { promisify } from 'node:util';
-import { commands, ConfigurationChangeEvent, ExtensionContext, window, StatusBarAlignment, StatusBarItem, workspace, OutputChannel } from 'vscode';
+import { commands, ConfigurationChangeEvent, ExtensionContext, window, StatusBarAlignment, StatusBarItem, workspace, LogOutputChannel } from 'vscode';
 import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 
 const accessAsync = promisify(access);
@@ -30,7 +30,7 @@ const SHUTDOWN_TIMEOUT_MS = 3000;
 const START_TIMEOUT_MS = 30000;
 
 let client: LanguageClient | undefined;
-let outputChannel: OutputChannel | undefined;
+let outputChannel: LogOutputChannel | undefined;
 let statusBarItem: StatusBarItem | undefined;
 
 // Restarts run one at a time. Each call chains onto the previous, so a run
@@ -244,7 +244,7 @@ async function retireClient(): Promise<void> {
 // same serialized path as any other restart. The trailing handler catches a
 // rejection from either the notification or the command so neither goes
 // unhandled.
-function reportMissing(channel: OutputChannel, message: string): void {
+function reportMissing(channel: LogOutputChannel, message: string): void {
   channel.appendLine(`ERROR: ${message}`);
   showPony(false);
   Promise.resolve(window.showErrorMessage(message, 'Retry'))
@@ -330,7 +330,7 @@ async function startLanguageServer(): Promise<void> {
     }
     channel.appendLine(`ERROR: Pony language server client failed: ${reason}`);
     Promise.resolve(window.showWarningMessage(`Pony language server client failed: ${reason}`))
-      .then(undefined, () => {});
+      .then(undefined, () => { });
     showPony(false);
     await retireClient();
   }
@@ -342,7 +342,7 @@ async function startLanguageServer(): Promise<void> {
 // The caller's catch retires the timed-out client, which kills its process.
 async function startWithTimeout(newClient: LanguageClient): Promise<void> {
   const started = newClient.start();
-  started.then(undefined, () => {});
+  started.then(undefined, () => { });
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_resolve, reject) => {
     timer = setTimeout(
@@ -372,7 +372,7 @@ function restart(): Promise<void> {
 export async function activate(context: ExtensionContext) {
   shuttingDown = false;
   queue = Promise.resolve();
-  outputChannel = window.createOutputChannel("Pony Language Server");
+  outputChannel = window.createOutputChannel("Pony Language Server", { log: true });
 
   // Register the ways back into a restart before the first one runs. If
   // resolution returns early because pony-lsp is missing, these must already be
