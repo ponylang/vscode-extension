@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/) and [Keep a CHANGELOG](http://keepachangelog.com/).
 
-## [unreleased] - unreleased
+## [0.5.0] - 2026-07-19
 
 ### Fixed
 
@@ -12,9 +12,6 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 
 - Find a newly installed pony-lsp without restarting VS Code ([PR #36](https://github.com/ponylang/vscode-extension/pull/36))
-
-### Changed
-
 
 ## [0.4.0] - 2026-04-07
 
